@@ -1,8 +1,0 @@
-[
-{
-  "directory": "/home/vixen/Documents/UTBM/INFO02/AP4a/Projet/AP4A/build",
-  "command": "/usr/bin/c++  -I/home/vixen/Documents/UTBM/INFO02/AP4a/Projet/AP4A/src -std=c++17 -Wall -Wextra -Wpedantic -o CMakeFiles/simulator.dir/src/main.cpp.o -c /home/vixen/Documents/UTBM/INFO02/AP4a/Projet/AP4A/src/main.cpp",
-  "file": "/home/vixen/Documents/UTBM/INFO02/AP4a/Projet/AP4A/src/main.cpp",
-  "output": "CMakeFiles/simulator.dir/src/main.cpp.o"
-}
-]
