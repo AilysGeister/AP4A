@@ -1,21 +1,12 @@
-class Server {
-    public:
-        Server();
-        Server(const Server&);
-        ~Server();
-        Server& operator= (const Server&);
-        void consoleWriter();
-        void fileWriter();
-};
+#include "../headers/Server.hpp"
 
 /*
-Constructeurs & Destructeur
+* Constructeurs & Destructeur
 */
-Server::Server() {
 
-}
+Server::Server(std::string name, int version): name(name), version(version){}
 
-Server::Server(const Server&) {
+Server::Server(const Server& server) {
 
 }
 
@@ -24,20 +15,48 @@ Server::~Server() {
 }
 
 /*
-Opérateurs
+* Geters & Seters
 */
 
-Server& Server::operator= {
+void Server::setName(std::string name) {
+    this->name = name;
+}
 
+std::string Server::getName() {
+    return this->name;
+}
+
+void Server::setIp(std::string ip) {
+    this->ip = ip;
+}
+
+std::string Server::getIp() {
+    return this->ip;
+}
+
+void Server::setVersions(int version) {
+    this->version = version;
+}
+
+int Server::getVersion() {
+    return this->version;
+}
+
+void Server::setPort(int port) {
+    this->port = port;
+}
+
+int Server::getPort() {
+    return this->port;
 }
 
 /*
-Méthodes
+* Méthodes
 */
-Server::consoleWriter() {
+void Server::consoleWriter() {
 
 }
 
-Server::fileWriter() {
-    
+void Server::fileWriter() {
+
 }

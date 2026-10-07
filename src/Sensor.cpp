@@ -3,7 +3,7 @@ class Sensor {
         Sensor();
         Sensor(const Sensor&);
         ~Sensor();
-        Sensor& operator= (const Sensor&);
+        //Sensor& operator= (const Sensor&);
 };
 
 /*
@@ -25,6 +25,6 @@ Sensor::~Sensor() {
 Opérateurs
 */
 
-Sensor& Sensor::operator= {
+/*Sensor& Sensor::operator= {
     
-}
+}*/

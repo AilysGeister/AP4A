@@ -3,7 +3,7 @@ class Scheduler {
         Scheduler();
         Scheduler(const Scheduler&);
         ~Scheduler();
-        Scheduler& operator= (const Scheduler&);
+       // Scheduler& operator= (const Scheduler&);
 };
 
 /*
@@ -25,6 +25,16 @@ Scheduler::~Scheduler() {
 Opérateurs
 */
 
-Scheduler& Scheduler::operator= {
+/*Scheduler& Scheduler::operator= {
     
+}*/
+
+/*
+Scheduler::simulation() {
+    while(true) {
+        sleep(1);
+
+        
+    }
 }
+*/
