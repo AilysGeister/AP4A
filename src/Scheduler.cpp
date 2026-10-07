@@ -25,6 +25,6 @@ Scheduler::~Scheduler() {
 Opérateurs
 */
 
-Scheduler& Scheduler::operator= {
+// Scheduler& Scheduler::operator= {
     
-}
+// }
