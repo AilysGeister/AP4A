@@ -1,49 +1,44 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
+#include <fstream>
+#include <iostream>
 #include <string>
 
 class Server {
 private:
-    std::string name;
-    std::string ip;
-    int version;
-    int port;
-    /*
-    ofstream out;
-    //pareil pour chauqe type de sensor
-    */
+  std::string name;
+  std::string ip;
+  int version;
+  int port;
 
 public:
-    Server();
+  // Forme cannonique
+  Server();
+  Server(const std::string &name, int version);
+  Server(const Server &other);
+  Server &operator=(const Server &other);
+  ~Server();
 
-    Server(std::string name, int version);
+  // Setters & Geters
+  void setName(const std::string &name);
+  std::string getName() const;
 
-    Server(const Server&);
+  void setIp(const std::string &ip);
+  std::string getIp() const;
 
-    ~Server();
+  void setVersion(int version);
+  int getVersion() const;
 
-    Server& operator= (const Server&);
+  void setPort(int port);
+  int getPort() const;
 
-    void setName(std::string name);
+  // Log
+  void consoleWrite(const std::string &data) const;
+  void fileWrite(const std::string &filename, const std::string &data) const;
 
-    void setIp(std::string ip);
-
-    void setVersions(int version);
-
-    void setPort(int port);
-
-    std::string getName();
-
-    std::string getIp();
-
-    int getVersion();
-
-    int getPort();
-
-    void consoleWriter();
-
-    void fileWriter();
+  // Surcharge <<
+  friend std::ostream &operator<<(std::ostream &os, const Server &server);
 };
 
 #endif

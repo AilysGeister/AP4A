@@ -9,7 +9,8 @@ Simulateur d'écosystème IoT C++17 pour le monitoring de la qualité de l'air (
 ├── CMakeLists.txt
 ├── headers/          # Fichiers d'en-tête (.h / .hpp)
 ├── src/              # Fichiers sources (.cpp)
-└── bin/              # Dossier où est généré l'exécutable
+├── bin/              # Dossier où est généré l'exécutable
+└── data/             # Fichiers de données
 ```
 
 ## Préréquis
