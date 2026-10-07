@@ -1,55 +1,57 @@
 cmake_minimum_required(VERSION 3.16)
 
-# Project updated to 'simulator' with C++ support
+# Nom du projet
 project(simulator CXX)
 
-# Use C++17 standard
+# Utilisation du standard C++17
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Export compile_commands.json for LSP/tooling (clangd, ccls)
+# Export de compile_commands.json pour autocomplétion/LSP (VS Code, CLion, clangd)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Force executables to be placed in project_root/bin
+# Placer les exécutables compilés dans project_root/bin
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
 
 # ------------------------------------------------------------------------------
-# Source Discovery & Library Setup
+# Recherche des fichiers sources et en-têtes
 # ------------------------------------------------------------------------------
 
-# Collect all C++ sources under src/
+# Découverte automatique des fichiers .cpp dans src/
 file(GLOB_RECURSE SIMULATOR_SOURCES CONFIGURE_DEPENDS src/*.cpp)
 
 set(MAIN_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp")
 
-# Filter out main.cpp to find secondary library sources
+# Filtrer main.cpp pour isoler les autres fichiers sources (.cpp)
 set(LIB_SOURCES ${SIMULATOR_SOURCES})
 list(REMOVE_ITEM LIB_SOURCES "${MAIN_SOURCE}")
 
-# Compiler warning flags
+# Options de compilation / Warnings
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     set(DEFAULT_COMPILE_OPTIONS -Wall -Wextra -Wpedantic)
 elseif(MSVC)
     set(DEFAULT_COMPILE_OPTIONS /W4)
 endif()
 
-# Build static library only if additional source files exist in src/
+# ------------------------------------------------------------------------------
+# Création de la bibliothèque et de l'exécutable
+# ------------------------------------------------------------------------------
+
+# Création de la bibliothèque statique si des sources existent dans src/
 if(LIB_SOURCES)
     add_library(simulator_lib STATIC ${LIB_SOURCES})
-    target_include_directories(simulator_lib PUBLIC src)
+    # Inclusion des dossiers headers/ et src/
+    target_include_directories(simulator_lib PUBLIC headers src)
     target_compile_options(simulator_lib PRIVATE ${DEFAULT_COMPILE_OPTIONS})
-    message(STATUS "Building simulator_lib with helper sources.")
+    message(STATUS "Building simulator_lib avec le dossier headers/ et src/.")
 else()
-    message(STATUS "No helper sources found in src/; building executable directly.")
+    message(STATUS "Aucun fichier source secondaire dans src/.")
 endif()
 
-# ------------------------------------------------------------------------------
-# Main Executable
-# ------------------------------------------------------------------------------
-
+# Création de l'exécutable principal
 add_executable(simulator "${MAIN_SOURCE}")
-target_include_directories(simulator PRIVATE src)
+target_include_directories(simulator PRIVATE headers src)
 target_compile_options(simulator PRIVATE ${DEFAULT_COMPILE_OPTIONS})
 
 if(TARGET simulator_lib)
@@ -57,17 +59,10 @@ if(TARGET simulator_lib)
 endif()
 
 # ------------------------------------------------------------------------------
-# Custom Utility Targets (Clean Build & Force Rebuild)
+# Cibles personnalisées (Clean Build)
 # ------------------------------------------------------------------------------
 
-# 1. Clean build target (`cmake --build build --target cleanbuild`)
 add_custom_target(cleanbuild
     COMMAND ${CMAKE_COMMAND} --build "${CMAKE_BINARY_DIR}" --clean-first
-    COMMENT "Cleaning and rebuilding all targets..."
-)
-
-# 2. Force rebuild target (`cmake --build build --target forcebuild`)
-add_custom_target(forcebuild
-    COMMAND ${CMAKE_COMMAND} --build "${CMAKE_BINARY_DIR}" -- --always-make
-    COMMENT "Forcing rebuild of all files, including unchanged ones..."
+    COMMENT "Nettoyage et re-compilation complète..."
 )
