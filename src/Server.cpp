@@ -58,7 +58,7 @@ void Server::fileWrite(const std::string &filename,
 
 // Surcharge <<
 std::ostream &operator<<(std::ostream &os, const Server &server) {
-  os << "Server(Name: " << server.name << ", IP: " << server.ip
-     << ", Port: " << server.port << ", Ver: " << server.version << ")";
+  os << "Server[Name: " << server.name << ", IP: " << server.ip
+     << ", Port: " << server.port << ", Ver: " << server.version << "]";
   return os;
 }
