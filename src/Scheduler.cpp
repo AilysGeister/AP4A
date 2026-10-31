@@ -1,16 +1,23 @@
 #include "Scheduler.hpp"
 
-// Constructeur par défaut
+// Constructeurs:
 Scheduler::Scheduler() : timeStep(1) {}
 
-// Constructeur paramétré
 Scheduler::Scheduler(int timeStep) : timeStep(timeStep) {}
 
-// Constructeur de recopie
 Scheduler::Scheduler(const Scheduler &other)
     : sensors(other.sensors), timeStep(other.timeStep) {}
 
-// Opérateur d'affectation
+// Destructeur:
+Scheduler::~Scheduler() {
+  if (sensors.data()) {
+    for (Sensor *sensor : sensors) {
+      delete sensor;
+    }
+  }
+}
+
+// Opérateurs:
 Scheduler &Scheduler::operator=(const Scheduler &other) {
   if (this != &other) {
     this->sensors = other.sensors;
@@ -19,12 +26,44 @@ Scheduler &Scheduler::operator=(const Scheduler &other) {
   return *this;
 }
 
-// Destructeur
-Scheduler::~Scheduler() {}
+std::ostream &operator<<(std::ostream &os, const Scheduler &scheduler) {
+  os << "Scheduler[Capteurs: " << scheduler.sensors.size()
+     << ", Tick: " << scheduler.timeStep << "s]";
+  return os;
+}
 
+// Getters & Setters:
 void Scheduler::addSensor(Sensor *sensor) {
   if (sensor) {
     sensors.push_back(sensor);
+  }
+}
+
+void Scheduler::removeSensor(Sensor *sensor) {
+  if (sensor) {
+    for (auto it = sensors.begin(); it != sensors.end(); ++it) {
+      if (*it == sensor) {
+        sensors.erase(it);
+      }
+    }
+  }
+}
+
+void Scheduler::removeAllSensors() {
+  for (auto it = sensors.begin(); it != sensors.end(); ++it) {
+    delete *it;
+  }
+}
+
+void Scheduler::setSensors(std::vector<Sensor *> sensors) {
+  this->sensors = sensors;
+}
+
+std::vector<Sensor *> Scheduler::getSensors() { return this->sensors; }
+
+Sensor *Scheduler::getSensor(int index) {
+  if (index < sensors.size()) {
+    return sensors[index];
   }
 }
 
@@ -40,11 +79,4 @@ void Scheduler::simulation(int steps) {
       }
     }
   }
-}
-
-// Surcharge <<
-std::ostream &operator<<(std::ostream &os, const Scheduler &scheduler) {
-  os << "Scheduler[Capteurs: " << scheduler.sensors.size()
-     << ", Tick: " << scheduler.timeStep << "s]";
-  return os;
 }

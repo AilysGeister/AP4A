@@ -1,31 +1,31 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
-#include <fstream>
+#include "Ip.hpp"
 #include <iostream>
 #include <string>
 
 class Server {
 private:
   std::string name;
-  std::string ip;
-  int version;
+  Ipv4 ip;
   int port;
+  int version;
 
 public:
-  // Forme cannonique
+  // Forme cannonique:
   Server();
-  Server(const std::string &name, int version);
+  Server(const std::string &name, const Ipv4 &ip, int port, int version);
   Server(const Server &other);
   Server &operator=(const Server &other);
   ~Server();
 
-  // Setters & Geters
+  // Setters & Getters:
   void setName(const std::string &name);
   std::string getName() const;
 
-  void setIp(const std::string &ip);
-  std::string getIp() const;
+  void setIp(const Ipv4 &ip);
+  Ipv4 getIp() const;
 
   void setVersion(int version);
   int getVersion() const;
@@ -33,11 +33,11 @@ public:
   void setPort(int port);
   int getPort() const;
 
-  // Log
+  // Log:
   void consoleWrite(const std::string &data) const;
   void fileWrite(const std::string &filename, const std::string &data) const;
 
-  // Surcharge <<
+  // Surcharge<<:
   friend std::ostream &operator<<(std::ostream &os, const Server &server);
 };
 

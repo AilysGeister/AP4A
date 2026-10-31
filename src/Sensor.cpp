@@ -28,24 +28,30 @@ Sensor &Sensor::operator=(const Sensor &other) {
   return *this;
 }
 
-// Destructeur
-Sensor::~Sensor() {}
+// Destructeur:
+Sensor::~Sensor() {
+  if (server) {
+    free(server);
+  }
+}
 
-// Getters & Setters
-int Sensor::getId() const { return this->id; }
+// Getters & Setters:
+void Sensor::setIp(const Ipv4 &ip) { this->ip = ip; }
+
+Ipv4 Sensor::getIp() const { return this->ip; }
+
 std::string Sensor::getType() const { return this->type; }
 
 double Sensor::getValue() const { return this->value; }
-void Sensor::setServer(Server *server) { this->server = server; }
 
+void Sensor::setServer(Server *server) { this->server = server; }
 Server *Sensor::getServer() const { return this->server; }
 
-// Simulation d'une mesure de données aléatoires
+// Simulation d'une mesure de données aléatoires:
 void Sensor::execute() {
   this->value = (rand() % 1000) / 10.0; // entre 0.0 et 99.9
 
-  std::string logMsg = "Sensor ID=" + std::to_string(id) + 
-                       "\t| Type=" + type +
+  std::string logMsg = "Sensor ID=" + std::to_string(id) + "\t| Type=" + type +
                        "  \t| Value=" + std::to_string(value);
 
   if (server) {

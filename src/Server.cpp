@@ -1,19 +1,18 @@
 #include "Server.hpp"
 
-// Constructeur par défaut
-Server::Server()
-    : name("Server_Default"), ip("127.0.0.1"), version(0), port(8080) {}
+// Constructeur par défaut:
+Server::Server() : name("Server_Default"), ip(Ipv4()), version(0), port(8080) {}
 
-// Constructeur paramétré (avec liste d'initialisation)
-Server::Server(const std::string &name, int version)
-    : name(name), ip("127.0.0.1"), version(version), port(8080) {}
+// Constructeur paramétré (avec liste d'initialisation):
+Server::Server(const std::string &name, const Ipv4 &ip, int port, int version)
+    : name(name), ip(ip), port(port), version(version) {}
 
-// Constructeur de recopie
+// Constructeur de recopie:
 Server::Server(const Server &other)
-    : name(other.name), ip(other.ip), version(other.version), port(other.port) {
+    : name(other.name), ip(other.ip), port(other.port), version(other.version) {
 }
 
-// Opérateur d'affectation
+// Opérateur d'affectation:
 Server &Server::operator=(const Server &other) {
   if (this != &other) {
     this->name = other.name;
@@ -24,15 +23,15 @@ Server &Server::operator=(const Server &other) {
   return *this;
 }
 
-// Destructeur
+// Destructeur:
 Server::~Server() {}
 
-// Setters & Geters
+// Setters & Getters:
 void Server::setName(const std::string &name) { this->name = name; }
 std::string Server::getName() const { return this->name; }
 
-void Server::setIp(const std::string &ip) { this->ip = ip; }
-std::string Server::getIp() const { return this->ip; }
+void Server::setIp(const Ipv4 &ip) { this->ip = ip; }
+Ipv4 Server::getIp() const { return this->ip; }
 
 void Server::setVersion(int version) { this->version = version; }
 int Server::getVersion() const { return this->version; }
@@ -40,7 +39,7 @@ int Server::getVersion() const { return this->version; }
 void Server::setPort(int port) { this->port = port; }
 int Server::getPort() const { return this->port; }
 
-// Methodes
+// Methodes:
 void Server::consoleWrite(const std::string &data) const {
   std::cout << "[" << name << "] " << data << std::endl;
 }
@@ -53,7 +52,7 @@ void Server::fileWrite(const std::string &filename,
   } else {
     std::cerr << "[ERREUR] Impossible d'ouvrir le fichier : " << filename
               << std::endl;
-  }              
+  }
 }
 
 // Surcharge <<

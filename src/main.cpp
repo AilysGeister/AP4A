@@ -5,7 +5,7 @@
 #include "Scheduler.hpp"
 
 int main() {
-    Server server("CentralServer", 1);
+    Server server("CentralServer", Ipv4(), 8080, 1);
     Sensor tempSensor("Temperature", &server);
     Sensor humiditySensor("Humidity", &server);
 
