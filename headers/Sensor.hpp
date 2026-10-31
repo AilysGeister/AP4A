@@ -5,38 +5,49 @@
 #include <iostream>
 #include <string>
 
-// eviter les inclusions croisees
+#include "Ip.hpp"
+
+// Éviter les inclusions croisées:
 class Server;
 
 class Sensor {
 private:
-  static int
-      nextId; // Compteur statique pour attribuer un ID unique à chaque instance
-  int id;     // Identifiant unique
+  Ipv4 ip;
   std::string type; // Type de capteur (ex: "Temperature", "Humidity")
   double value;     // Valeur mesurée
   Server *server;   // Pointeur vers le serveur associé
+  static int
+      nextId; // Compteur statique pour attribuer un ID unique à chaque instance
+  int id;     // Identifiant unique
 
 public:
-  // Forme canonique
+  // Forme canonique:
   Sensor();
   Sensor(const std::string &type, Server *server = nullptr);
   Sensor(const Sensor &other);
   Sensor &operator=(const Sensor &other);
   ~Sensor();
 
-  // Getters & Setters
-  int getId() const;
+  // Getters & Setters:
+  void setIp(const Ipv4 &ip);
+  Ipv4 getIp() const;
   std::string getType() const;
   double getValue() const;
   void setServer(Server *server);
   Server *getServer() const;
 
-  // Methodesde simulation
-  void execute(); // Génère une nouvelle donnée mesurée et l'envoie au serveur
-  void update(); // Appelé par le Scheduler pour mettre à jour le comportement
+  // Methodesde simulation:
+  /**
+   * Génère une nouvelle donnée mesurée et l'envoie au serveur.
+   */
+  void execute();
 
-  // Friend de sortie
+  /**
+   * Appelé par le Scheduler pour mettre à jour le comportement.
+   */
+  void update();
+
+  // Friend de sortie:
   friend std::ostream &operator<<(std::ostream &os, const Sensor &sensor);
 };
 
