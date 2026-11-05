@@ -1,4 +1,5 @@
 #include "Server.hpp"
+#include <fstream>
 
 // Constructeur par défaut:
 Server::Server() : name("Server_Default"), ip(Ipv4()), version(0), port(8080) {}

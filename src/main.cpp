@@ -6,6 +6,7 @@
 
 int main() {
     Server server("CentralServer", Ipv4(), 8080, 1);
+    /*
     Sensor tempSensor("Temperature", &server);
     Sensor humiditySensor("Humidity", &server);
 
@@ -32,7 +33,7 @@ int main() {
         std::cout << "-> Les états des objets ont été sauvegardés dans 'system_status.log'." << std::endl;
     }
 
-    scheduler.simulation(3);
+    scheduler.simulation(3);*/
 
     return 0;
 }
