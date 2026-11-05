@@ -7,8 +7,8 @@
 
 class Scheduler {
 private:
-  std::vector<Sensor *> sensors; // Liste des capteurs enregistrés
-  int timeStep;                  // Intervalle ou pas de temps de simulation
+  std::vector<ISensor *> sensors; // Liste des capteurs enregistrés
+  int timeStep;                   // Intervalle ou pas de temps de simulation
 
 public:
   // Constructeurs:
@@ -24,12 +24,12 @@ public:
   friend std::ostream &operator<<(std::ostream &os, const Scheduler &scheduler);
 
   // Getters & Setters:
-  void addSensor(Sensor *sensor);
-  void removeSensor(Sensor *sensor);
+  void addSensor(ISensor *sensor);
+  void removeSensor(ISensor *sensor);
   void removeAllSensors();
-  void setSensors(std::vector<Sensor *> sensors);
-  std::vector<Sensor *> getSensors();
-  Sensor *getSensor(int index);
+  void setSensors(std::vector<ISensor *> sensors);
+  std::vector<ISensor *> getSensors() const;
+  ISensor *getSensor(int index) const;
 
   // Méthodes:
   void simulation(int steps);

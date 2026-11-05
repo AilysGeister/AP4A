@@ -2,26 +2,33 @@
 #include "Server.hpp"
 #include <cstdlib> // rand()
 
-// ID uniques
-int Sensor::nextId = 1;
+/*======================================================================================================================
+ Class: Sensor
+ =====================================================================================================================*/
 
-// Constructeur par défaut
-Sensor::Sensor() : id(nextId++), type("Generic"), value(0.0), server(nullptr) {}
+// ID uniques:
+template <typename T> int Sensor<T>::nextId = 1;
 
-// Constructeur paramétré
-Sensor::Sensor(const std::string &type, Server *server)
-    : id(nextId++), type(type), value(0.0), server(server) {}
+// Constructeur par défaut:
+template <typename T>
+Sensor<T>::Sensor() : id(nextId++), server(nullptr), measurement(0, "none") {}
+
+// Constructeur paramétré:
+template <typename T>
+Sensor<T>::Sensor(const Ipv4 &ipv4, float accuracy, Server *server)
+    : id(nextId++), ip(ipv4), accuracy(accuracy), server(server) {}
 
 // Constructeur de recopie
-Sensor::Sensor(const Sensor &other)
-    : id(nextId++), type(other.type), value(other.value), server(other.server) {
-}
+template <typename T>
+Sensor<T>::Sensor(const Sensor &other)
+    : id(nextId++), ip(other.ip), accuracy(other.accuracy),
+      measurement(other.measurement), server(other.server) {}
 
 // Opérateur d'affectation
-Sensor &Sensor::operator=(const Sensor &other) {
+template <typename T> Sensor<T> &Sensor<T>::operator=(const Sensor<T> &other) {
   if (this != &other) {
-    this->type = other.type;
-    this->value = other.value;
+    this->accuracy = other.accuracy;
+    this->measurement = other.measurement;
     this->server = other.server;
     // On ne copie pas l'id pour garder l'unicité
   }
@@ -29,42 +36,113 @@ Sensor &Sensor::operator=(const Sensor &other) {
 }
 
 // Destructeur:
-Sensor::~Sensor() {
+template <typename T> Sensor<T>::~Sensor() {
   if (server) {
-    free(server);
+    delete (server);
   }
 }
 
 // Getters & Setters:
-void Sensor::setIp(const Ipv4 &ip) { this->ip = ip; }
+template <typename T> int Sensor<T>::getId() const { return this->id; }
 
-Ipv4 Sensor::getIp() const { return this->ip; }
+template <typename T> void Sensor<T>::setIp(const Ipv4 &ip) { this->ip = ip; }
 
-std::string Sensor::getType() const { return this->type; }
+template <typename T> Ipv4 Sensor<T>::getIp() const { return this->ip; }
 
-double Sensor::getValue() const { return this->value; }
+template <typename T> void Sensor<T>::setServer(Server *server) {
+  this->server = server;
+}
 
-void Sensor::setServer(Server *server) { this->server = server; }
-Server *Sensor::getServer() const { return this->server; }
+template <typename T> Server *Sensor<T>::getServer() const {
+  return this->server;
+}
 
-// Simulation d'une mesure de données aléatoires:
-void Sensor::execute() {
-  this->value = (rand() % 1000) / 10.0; // entre 0.0 et 99.9
-
-  std::string logMsg = "Sensor ID=" + std::to_string(id) + "\t| Type=" + type +
-                       "  \t| Value=" + std::to_string(value);
-
+template <typename T> void Sensor<T>::update() {
+  this->execute();
+  std::string logMsg =
+      "Sensor ID=" + std::to_string(id) + " | IP=" + ip.toString() +
+      "\t| Type=" + getType() + "\t| Value=" +
+      std::to_string(measurement.getValue()) + " " + measurement.getUnit();
   if (server) {
     server->consoleWrite(logMsg);
-    server->fileWrite("data/" + type + "_logs.csv", logMsg);
+    server->fileWrite("data/" + getType() + ".csv", logMsg);
   }
 }
 
-void Sensor::update() { this->execute(); }
-
 // Surcharge <<
-std::ostream &operator<<(std::ostream &os, const Sensor &sensor) {
-  os << "Sensor[ID: " << sensor.id << ", Type: " << sensor.type
-     << ", Value: " << sensor.value << "]";
+template <typename T>
+std::ostream &operator<<(std::ostream &os, const Sensor<T> &sensor) {
+  os << "Sensor[ID: " << sensor.id << ", Type: non définie";
   return os;
+}
+
+/*======================================================================================================================
+ Class: Thermometer
+ =====================================================================================================================*/
+
+Thermometer::Thermometer() : Sensor<float>() { measurement.setUnit("°C"); }
+Thermometer::Thermometer(Ipv4 ipv4, float accuracy, Server *server)
+    : Sensor<float>(ipv4, accuracy, server) {
+  measurement.setUnit("°C");
+}
+Thermometer::Thermometer(const Thermometer &other) : Sensor<float>(other) {}
+
+Data<float> Thermometer::getValue() const { return measurement; }
+
+void Thermometer::execute() {
+  measurement.setValue((rand() % 1000) / 10.0f);
+}
+
+/*======================================================================================================================
+ Class: HumiditySensor
+ =====================================================================================================================*/
+
+HumiditySensor::HumiditySensor() : Sensor<float>() { measurement.setUnit("%"); }
+HumiditySensor::HumiditySensor(Ipv4 ipv4, float accuracy, Server *server)
+    : Sensor<float>(ipv4, accuracy, server) {
+  measurement.setUnit("%");
+}
+HumiditySensor::HumiditySensor(const HumiditySensor &other)
+    : Sensor<float>(other) {} // ou adapter selon le type exact
+
+Data<float> HumiditySensor::getValue() const { return measurement; }
+
+void HumiditySensor::execute() {
+  measurement.setValue((rand() % 1000) / 10.0f);
+}
+
+/*======================================================================================================================
+  Class: PressureSensor
+  =====================================================================================================================*/
+PressureSensor::PressureSensor() : Sensor<int>() { measurement.setUnit("hPa"); }
+PressureSensor::PressureSensor(Ipv4 ipv4, float accuracy, Server *server)
+    : Sensor<int>(ipv4, accuracy, server) {
+  measurement.setUnit("hPa");
+}
+PressureSensor::PressureSensor(const PressureSensor &other)
+    : Sensor<int>(other) {}
+
+Data<int> PressureSensor::getValue() const { return measurement; }
+
+void PressureSensor::execute() {
+  measurement.setValue(900 + (rand() % 200));
+}
+
+/*======================================================================================================================
+  Class: ParticleSensor
+  =====================================================================================================================*/
+ParticleSensor::ParticleSensor() : Sensor<float>() {
+  measurement.setUnit("ug/m3");
+}
+ParticleSensor::ParticleSensor(Ipv4 ipv4, float accuracy, Server *server)
+    : Sensor<float>(ipv4, accuracy, server) {
+  measurement.setUnit("ug/m3");
+}
+ParticleSensor::ParticleSensor(const ParticleSensor &other)
+    : Sensor<float>(other) {}
+
+Data<float> ParticleSensor::getValue() const { return measurement; }
+
+void ParticleSensor::execute() {
+  measurement.setValue((rand() % 500) / 10.0f);
 }
