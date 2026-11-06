@@ -11,18 +11,19 @@ template <typename T> int Sensor<T>::nextId = 1;
 
 // Constructeur par défaut:
 template <typename T>
-Sensor<T>::Sensor() : id(nextId++), server(nullptr), measurement(0, "none") {}
+Sensor<T>::Sensor()
+    : id(nextId++), server(nullptr), room(nullptr), measurement(0, "none") {}
 
 // Constructeur paramétré:
 template <typename T>
-Sensor<T>::Sensor(const Ipv4 &ipv4, float accuracy, Server *server)
-    : id(nextId++), ip(ipv4), accuracy(accuracy), server(server) {}
+Sensor<T>::Sensor(const Ipv4 &ipv4, float accuracy, Server *server, Room *room)
+    : id(nextId++), ip(ipv4), accuracy(accuracy), server(server), room(room) {}
 
 // Constructeur de recopie
 template <typename T>
 Sensor<T>::Sensor(const Sensor &other)
     : id(nextId++), ip(other.ip), accuracy(other.accuracy),
-      measurement(other.measurement), server(other.server) {}
+      measurement(other.measurement), server(other.server), room(other.room) {}
 
 // Opérateur d'affectation
 template <typename T> Sensor<T> &Sensor<T>::operator=(const Sensor<T> &other) {
@@ -30,17 +31,13 @@ template <typename T> Sensor<T> &Sensor<T>::operator=(const Sensor<T> &other) {
     this->accuracy = other.accuracy;
     this->measurement = other.measurement;
     this->server = other.server;
-    // On ne copie pas l'id pour garder l'unicité
+    this->room = other.room;
   }
   return *this;
 }
 
 // Destructeur:
-template <typename T> Sensor<T>::~Sensor() {
-  if (server) {
-    delete (server);
-  }
-}
+template <typename T> Sensor<T>::~Sensor() {}
 
 // Getters & Setters:
 template <typename T> int Sensor<T>::getId() const { return this->id; }
@@ -53,6 +50,8 @@ template <typename T> void Sensor<T>::setServer(Server *server) {
   this->server = server;
 }
 
+template <typename T> void Sensor<T>::setRoom(Room *room) { this->room = room; }
+
 template <typename T> Server *Sensor<T>::getServer() const {
   return this->server;
 }
@@ -61,8 +60,9 @@ template <typename T> void Sensor<T>::update() {
   this->execute();
   std::string logMsg =
       "Sensor ID=" + std::to_string(id) + " | IP=" + ip.toString() +
-      "\t| Type=" + getType() + "\t| Value=" +
-      std::to_string(measurement.getValue()) + " " + measurement.getUnit();
+      "\t Salle= " + room->getName() + "\t| Type=" + getType() +
+      "\t| Value=" + std::to_string(measurement.getValue()) + " " +
+      measurement.getUnit();
   if (server) {
     server->consoleWrite(logMsg);
     server->fileWrite("data/" + getType() + ".csv", logMsg);
@@ -90,7 +90,9 @@ Thermometer::Thermometer(const Thermometer &other) : Sensor<float>(other) {}
 Data<float> Thermometer::getValue() const { return measurement; }
 
 void Thermometer::execute() {
-  measurement.setValue((rand() % 1000) / 10.0f);
+  float temp = this->room ? this->room->getTemperature() : 20.0f;
+  float maxGap = temp * (1.0f - accuracy);
+  measurement.setValue(randomInRange(temp - maxGap, temp + maxGap));
 }
 
 /*======================================================================================================================
@@ -108,7 +110,14 @@ HumiditySensor::HumiditySensor(const HumiditySensor &other)
 Data<float> HumiditySensor::getValue() const { return measurement; }
 
 void HumiditySensor::execute() {
-  measurement.setValue((rand() % 1000) / 10.0f);
+  float humidity = this->room ? this->room->getHumidity() : 50.0f;
+  float maxGap = humidity * (1.0f - accuracy);
+  float measurementValue = randomInRange(humidity - maxGap, humidity + maxGap);
+  if (measurementValue < 0.0f)
+    measurementValue = 0.0f;
+  if (measurementValue > 100.0f)
+    measurementValue = 100.0f;
+  measurement.setValue(measurementValue);
 }
 
 /*======================================================================================================================
@@ -125,24 +134,30 @@ PressureSensor::PressureSensor(const PressureSensor &other)
 Data<int> PressureSensor::getValue() const { return measurement; }
 
 void PressureSensor::execute() {
-  measurement.setValue(900 + (rand() % 200));
+  int pressure = this->room ? this->room->getPressure() : 1013;
+  float maxGap = pressure * (1.0f - accuracy);
+  measurement.setValue(
+      static_cast<int>(randomInRange(pressure - maxGap, pressure + maxGap)));
 }
 
 /*======================================================================================================================
   Class: ParticleSensor
   =====================================================================================================================*/
-ParticleSensor::ParticleSensor() : Sensor<float>() {
+ParticleSensor::ParticleSensor() : Sensor<int>() {
   measurement.setUnit("ug/m3");
 }
 ParticleSensor::ParticleSensor(Ipv4 ipv4, float accuracy, Server *server)
-    : Sensor<float>(ipv4, accuracy, server) {
+    : Sensor<int>(ipv4, accuracy, server) {
   measurement.setUnit("ug/m3");
 }
 ParticleSensor::ParticleSensor(const ParticleSensor &other)
-    : Sensor<float>(other) {}
+    : Sensor<int>(other) {}
 
-Data<float> ParticleSensor::getValue() const { return measurement; }
+Data<int> ParticleSensor::getValue() const { return measurement; }
 
 void ParticleSensor::execute() {
-  measurement.setValue((rand() % 500) / 10.0f);
+  int particles = this->room ? this->room->getParticles() : 15;
+  float maxGap = particles * (1.0f - accuracy);
+  measurement.setValue(
+      static_cast<int>(randomInRange(particles - maxGap, particles + maxGap)));
 }

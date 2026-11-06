@@ -1,39 +1,32 @@
 #include <iostream>
-#include <fstream>
+#include <vector>
 #include "Server.hpp"
-#include "Sensor.hpp"
 #include "Scheduler.hpp"
+#include "Room.hpp"
+#include "ConfigLoader.hpp"
 
 int main() {
-    Server server("CentralServer", Ipv4(), 8080, 1);
-    /*
-    Sensor tempSensor("Temperature", &server);
-    Sensor humiditySensor("Humidity", &server);
+    std::cout << "=== Entrez le nombre d'essai souhaité: ===" << std::endl;
+    int steps;
+    std::cin >> steps;
+
+    std::cout << "=== LANCEMENT DU SIMULATEUR IOT ===" << std::endl;
 
     Scheduler scheduler(1);
-    scheduler.addSensor(&tempSensor);
-    scheduler.addSensor(&humiditySensor);
 
-    std::cout << "=== TEST AFFICHAGE CONSOLE ===" << std::endl;
-    std::cout << server << std::endl;
-    std::cout << tempSensor << std::endl;
-    std::cout << humiditySensor << std::endl;
-    std::cout << scheduler << std::endl;
+    std::vector<Room*> rooms = ConfigLoader::loadRooms("config/rooms.csv");
 
+    std::vector<Server*> servers = ConfigLoader::loadServers("config/servers.csv");
 
-    std::cout << "\n=== TEST REDIRECTION VERS FICHIER LOG ===" << std::endl;
-    std::ofstream logFile("data/system_status.log", std::ios::app);
-    if (logFile.is_open()) {
-        logFile << "--- STATUT SYSTÈME ---" << std::endl;
-        logFile << server << std::endl;
-        logFile << tempSensor << std::endl;
-        logFile << humiditySensor << std::endl;
-        logFile << scheduler << std::endl;
-        logFile.close();
-        std::cout << "-> Les états des objets ont été sauvegardés dans 'system_status.log'." << std::endl;
-    }
+    ConfigLoader::loadSensors("config/sensors.csv", servers, rooms, scheduler);
 
-    scheduler.simulation(3);*/
+    scheduler.simulation(steps);
 
+    for (auto* room : rooms) delete room;
+    for (auto* server : servers) delete server;
+    rooms.clear();
+    servers.clear();
+
+    std::cout << "=== FIN DU PROGRAMME ===" << std::endl;
     return 0;
 }

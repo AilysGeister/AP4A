@@ -7,6 +7,7 @@
 
 #include "Data.hpp"
 #include "Ip.hpp"
+#include "Room.hpp"
 
 // Évite les inclusions croisées:
 class Server;
@@ -26,6 +27,7 @@ public:
   virtual Server *getServer() const = 0;
   virtual void setServer(Server *server) = 0;
   virtual std::string getType() const = 0;
+  virtual void setRoom(Room *room) = 0;
 };
 
 /**
@@ -36,6 +38,7 @@ template <typename T> class Sensor : public ISensor {
 protected:
   Ipv4 ip;
   Server *server; // Pointeur vers le serveur associé
+  Room *room;
   Data<T> measurement;
   static int
       nextId; // Compteur statique pour attribuer un ID unique à chaque instance
@@ -45,7 +48,8 @@ protected:
 public:
   // Forme canonique:
   Sensor();
-  Sensor(const Ipv4 &ipv4, float accuracy, Server *server = nullptr);
+  Sensor(const Ipv4 &ipv4, float accuracy, Server *server = nullptr,
+         Room *room = nullptr);
   Sensor(const Sensor &other);
   Sensor &operator=(const Sensor &other);
   virtual ~Sensor();
@@ -56,21 +60,22 @@ public:
   Ipv4 getIp() const override;
   void setServer(Server *server) override;
   Server *getServer() const override;
+  void setRoom(Room *room) override;
   virtual Data<T> getValue() const = 0;
 
-  // Methodesde simulation:
-  /**
-   * Génère une nouvelle donnée mesurée et l'envoie au serveur.
-   */
+  float randomInRange(float min, float max) {
+    return min + static_cast<float>(rand()) /
+                     (static_cast<float>(RAND_MAX / (max - min)));
+  }
+
+  // Methodes de simulation:
+
   virtual void execute() = 0;
 
-  /**
-   * Appelé par le Scheduler pour mettre à jour le comportement.
-   */
   void update() override;
 
-  // Friend de sortie:
-  friend std::ostream &operator<<(std::ostream &os, const Sensor<T> &sensor);
+  template <typename U>
+  friend std::ostream &operator<<(std::ostream &os, const Sensor<U> &sensor);
 };
 
 class Thermometer : public Sensor<float> {
@@ -121,7 +126,7 @@ public:
   void execute() override;
 };
 
-class ParticleSensor : public Sensor<float> {
+class ParticleSensor : public Sensor<int> {
 public:
   // Constructeurs:
   ParticleSensor();
@@ -133,7 +138,8 @@ public:
 
   // Méthodes:
   std::string getType() const override { return "Particules"; }
-  Data<float> getValue() const override;
+  Data<int> getValue() const override;
   void execute() override;
 };
+
 #endif // SENSOR_HPP
