@@ -1,39 +1,26 @@
-#include <iostream>
-#include <fstream>
-#include "Server.hpp"
-#include "Sensor.hpp"
+#include "ConfigLoader.hpp"
+#include "Room.hpp"
 #include "Scheduler.hpp"
+#include "Server.hpp"
+#include <iostream>
+#include <vector>
 
 int main() {
-    Server server("CentralServer", Ipv4(), 8080, 1);
-    /*
-    Sensor tempSensor("Temperature", &server);
-    Sensor humiditySensor("Humidity", &server);
+  Server server("CentralServer", Ipv4(), 8080, 1);
+  std::cout << server << std::endl;
 
-    Scheduler scheduler(1);
-    scheduler.addSensor(&tempSensor);
-    scheduler.addSensor(&humiditySensor);
+  Scheduler scheduler(1);
 
-    std::cout << "=== TEST AFFICHAGE CONSOLE ===" << std::endl;
-    std::cout << server << std::endl;
-    std::cout << tempSensor << std::endl;
-    std::cout << humiditySensor << std::endl;
-    std::cout << scheduler << std::endl;
+  std::vector<Room *> rooms = ConfigLoader::loadRooms("config/rooms.txt");
 
+  ConfigLoader::loadSensors("config/sensors.txt", &server, rooms, scheduler);
 
-    std::cout << "\n=== TEST REDIRECTION VERS FICHIER LOG ===" << std::endl;
-    std::ofstream logFile("data/system_status.log", std::ios::app);
-    if (logFile.is_open()) {
-        logFile << "--- STATUT SYSTÈME ---" << std::endl;
-        logFile << server << std::endl;
-        logFile << tempSensor << std::endl;
-        logFile << humiditySensor << std::endl;
-        logFile << scheduler << std::endl;
-        logFile.close();
-        std::cout << "-> Les états des objets ont été sauvegardés dans 'system_status.log'." << std::endl;
-    }
+  scheduler.simulation(5);
 
-    scheduler.simulation(3);*/
+  for (auto *room : rooms) {
+    delete room;
+  }
+  rooms.clear();
 
-    return 0;
+  return 0;
 }

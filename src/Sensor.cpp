@@ -80,10 +80,7 @@ std::ostream &operator<<(std::ostream &os, const Sensor<T> &sensor) {
 }
 
 // Méthodes:
-float randomInRange(float min, float max) {
-  return min + static_cast<float>(rand()) /
-                   (static_cast<float>(RAND_MAX / (max - min)));
-}
+
 
 /*======================================================================================================================
  Class: Thermometer

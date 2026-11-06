@@ -61,27 +61,19 @@ public:
   Server *getServer() const override;
   virtual Data<T> getValue() const = 0;
 
+  float randomInRange(float min, float max) {
+    return min + static_cast<float>(rand()) /
+                     (static_cast<float>(RAND_MAX / (max - min)));
+  }
+
   // Methodes de simulation:
-  /**
-   * Génère une nouvelle donnée mesurée et l'envoie au serveur.
-   */
+
   virtual void execute() = 0;
 
-  /**
-   * Appelé par le Scheduler pour mettre à jour le comportement.
-   */
   void update() override;
 
-  /**
-   * Tire une valeur entre une borne min et une borne max.
-   * @param min
-   * @param max
-   * @return
-   */
-  float randomInRange(float min, float max);
-
-  // Friend de sortie:
-  friend std::ostream &operator<<(std::ostream &os, const Sensor<T> &sensor);
+  template <typename U>
+  friend std::ostream &operator<<(std::ostream &os, const Sensor<U> &sensor);
 };
 
 class Thermometer : public Sensor<float> {
@@ -147,4 +139,5 @@ public:
   Data<int> getValue() const override;
   void execute() override;
 };
+
 #endif // SENSOR_HPP
