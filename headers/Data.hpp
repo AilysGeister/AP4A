@@ -24,6 +24,12 @@ public:
   T getValue() const { return this->value; }
 
   std::string getUnit() const { return this->unit; }
+
+  // Opérateurs:
+  Data &operator=(const Data &other) {
+    this->value = other.value;
+    this->unit = other.unit;
+  }
 };
 
 #endif // SIMULATOR_DATA_HPP

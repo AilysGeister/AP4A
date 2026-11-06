@@ -70,6 +70,14 @@ public:
     return false;
   }
 
+  Ipv4 &operator=(const Ipv4 &ipv4) {
+    for (int i = 0; i < 4; i++) {
+      this->value[i] = ipv4.value[i];
+    }
+    this->subnetMask = ipv4.subnetMask;
+    return *this;
+  }
+
   friend std::ostream &operator<<(std::ostream &os, const Ipv4 &ipv4) {
     os << ipv4.value[0] << '.' << ipv4.value[1] << '.' << ipv4.value[2] << '.'
        << ipv4.value[3] << '/' << ipv4.subnetMask;
