@@ -1,26 +1,28 @@
-#include "ConfigLoader.hpp"
-#include "Room.hpp"
-#include "Scheduler.hpp"
-#include "Server.hpp"
 #include <iostream>
 #include <vector>
+#include "Server.hpp"
+#include "Scheduler.hpp"
+#include "Room.hpp"
+#include "ConfigLoader.hpp"
 
 int main() {
-  Server server("CentralServer", Ipv4(), 8080, 1);
-  std::cout << server << std::endl;
+    std::cout << "=== LANCEMENT DU SIMULATEUR IOT ===" << std::endl;
 
-  Scheduler scheduler(1);
+    Scheduler scheduler(1);
 
-  std::vector<Room *> rooms = ConfigLoader::loadRooms("config/rooms.txt");
+    std::vector<Room*> rooms = ConfigLoader::loadRooms("config/rooms.csv");
 
-  ConfigLoader::loadSensors("config/sensors.txt", &server, rooms, scheduler);
+    std::vector<Server*> servers = ConfigLoader::loadServers("config/servers.csv");
 
-  scheduler.simulation(5);
+    ConfigLoader::loadSensors("config/sensors.csv", servers, rooms, scheduler);
 
-  for (auto *room : rooms) {
-    delete room;
-  }
-  rooms.clear();
+    scheduler.simulation(5);
 
-  return 0;
+    for (auto* room : rooms) delete room;
+    for (auto* server : servers) delete server;
+    rooms.clear();
+    servers.clear();
+
+    std::cout << "=== FIN DU PROGRAMME ===" << std::endl;
+    return 0;
 }

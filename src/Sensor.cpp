@@ -39,10 +39,11 @@ template <typename T> Sensor<T> &Sensor<T>::operator=(const Sensor<T> &other) {
 
 // Destructeur:
 template <typename T> Sensor<T>::~Sensor() {
-  if (server)
-    delete server;
-  if (room)
-    delete room;
+  // if (server)
+  //   delete server;
+  // if (room)
+  //   delete room;
+  // bah non enfaite
 }
 
 // Getters & Setters:
