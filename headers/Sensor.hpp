@@ -7,6 +7,7 @@
 
 #include "Data.hpp"
 #include "Ip.hpp"
+#include "Room.hpp"
 
 // Évite les inclusions croisées:
 class Server;
@@ -36,6 +37,7 @@ template <typename T> class Sensor : public ISensor {
 protected:
   Ipv4 ip;
   Server *server; // Pointeur vers le serveur associé
+  Room *room;
   Data<T> measurement;
   static int
       nextId; // Compteur statique pour attribuer un ID unique à chaque instance
@@ -45,7 +47,8 @@ protected:
 public:
   // Forme canonique:
   Sensor();
-  Sensor(const Ipv4 &ipv4, float accuracy, Server *server = nullptr);
+  Sensor(const Ipv4 &ipv4, float accuracy, Server *server = nullptr,
+         Room *room = nullptr);
   Sensor(const Sensor &other);
   Sensor &operator=(const Sensor &other);
   virtual ~Sensor();
@@ -58,7 +61,7 @@ public:
   Server *getServer() const override;
   virtual Data<T> getValue() const = 0;
 
-  // Methodesde simulation:
+  // Methodes de simulation:
   /**
    * Génère une nouvelle donnée mesurée et l'envoie au serveur.
    */
@@ -68,6 +71,14 @@ public:
    * Appelé par le Scheduler pour mettre à jour le comportement.
    */
   void update() override;
+
+  /**
+   * Tire une valeur entre une borne min et une borne max.
+   * @param min
+   * @param max
+   * @return
+   */
+  float randomInRange(float min, float max);
 
   // Friend de sortie:
   friend std::ostream &operator<<(std::ostream &os, const Sensor<T> &sensor);
@@ -121,7 +132,7 @@ public:
   void execute() override;
 };
 
-class ParticleSensor : public Sensor<float> {
+class ParticleSensor : public Sensor<int> {
 public:
   // Constructeurs:
   ParticleSensor();
@@ -133,7 +144,7 @@ public:
 
   // Méthodes:
   std::string getType() const override { return "Particules"; }
-  Data<float> getValue() const override;
+  Data<int> getValue() const override;
   void execute() override;
 };
 #endif // SENSOR_HPP
