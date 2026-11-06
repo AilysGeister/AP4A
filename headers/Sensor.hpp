@@ -27,6 +27,7 @@ public:
   virtual Server *getServer() const = 0;
   virtual void setServer(Server *server) = 0;
   virtual std::string getType() const = 0;
+  virtual void setRoom(Room *room) = 0;
 };
 
 /**
@@ -59,6 +60,7 @@ public:
   Ipv4 getIp() const override;
   void setServer(Server *server) override;
   Server *getServer() const override;
+  void setRoom(Room *room) override;
   virtual Data<T> getValue() const = 0;
 
   float randomInRange(float min, float max) {

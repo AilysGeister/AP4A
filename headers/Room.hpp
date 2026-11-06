@@ -1,6 +1,7 @@
 #ifndef SIMULATOR_ROOM_HPP
 #define SIMULATOR_ROOM_HPP
 #include <string>
+#include <utility>
 
 class Room {
 private:
@@ -18,7 +19,7 @@ public:
 
   Room(std::string name)
       : temperature(20), humidity(50.0), pressure(1013), particles(15),
-        id(++nextId), name(name) {}
+        id(++nextId), name(std::move(name)) {}
 
   Room(const Room &other)
       : temperature(other.temperature), humidity(other.humidity),
@@ -31,7 +32,7 @@ public:
   // Getters & Setters:
   int getId() const { return id; }
   void setName(const std::string &name) { this->name = name; }
-  std::string getName() const { return name; }
+  std::string getName() { return name; }
   void setTemperature(float temperature) { this->temperature = temperature; }
   float getTemperature() const { return temperature; }
   void setHumidity(float humidity) { this->humidity = humidity; }
@@ -49,9 +50,8 @@ public:
       pressure = other.pressure;
       particles = other.particles;
       name = other.name;
-      // id reste unique à l'instance
     }
-    return *this; // <-- (manquait le return)
+    return *this;
   }
 };
 

@@ -32,19 +32,12 @@ template <typename T> Sensor<T> &Sensor<T>::operator=(const Sensor<T> &other) {
     this->measurement = other.measurement;
     this->server = other.server;
     this->room = other.room;
-    // On ne copie pas l'id pour garder l'unicité
   }
   return *this;
 }
 
 // Destructeur:
-template <typename T> Sensor<T>::~Sensor() {
-  // if (server)
-  //   delete server;
-  // if (room)
-  //   delete room;
-  // bah non enfaite
-}
+template <typename T> Sensor<T>::~Sensor() {}
 
 // Getters & Setters:
 template <typename T> int Sensor<T>::getId() const { return this->id; }
@@ -57,16 +50,19 @@ template <typename T> void Sensor<T>::setServer(Server *server) {
   this->server = server;
 }
 
+template <typename T> void Sensor<T>::setRoom(Room *room) { this->room = room; }
+
 template <typename T> Server *Sensor<T>::getServer() const {
   return this->server;
 }
 
 template <typename T> void Sensor<T>::update() {
   this->execute();
-  std::string logMsg = "Sensor ID=" + std::to_string(id) +
-                       " | IP=" + ip.toString() + "\t| Type=" + getType() +
-                       "\t| Value=" + std::to_string(measurement.getValue()) +
-                       " " + measurement.getUnit();
+  std::string logMsg =
+      "Sensor ID=" + std::to_string(id) + " | IP=" + ip.toString() +
+      "\t Salle= " + room->getName() + "\t| Type=" + getType() +
+      "\t| Value=" + std::to_string(measurement.getValue()) + " " +
+      measurement.getUnit();
   if (server) {
     server->consoleWrite(logMsg);
     server->fileWrite("data/" + getType() + ".csv", logMsg);
@@ -79,9 +75,6 @@ std::ostream &operator<<(std::ostream &os, const Sensor<T> &sensor) {
   os << "Sensor[ID: " << sensor.id << ", Type: non définie";
   return os;
 }
-
-// Méthodes:
-
 
 /*======================================================================================================================
  Class: Thermometer

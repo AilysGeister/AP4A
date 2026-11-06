@@ -6,6 +6,10 @@
 #include "ConfigLoader.hpp"
 
 int main() {
+    std::cout << "=== Entrez le nombre d'essai souhaité: ===" << std::endl;
+    int steps;
+    std::cin >> steps;
+
     std::cout << "=== LANCEMENT DU SIMULATEUR IOT ===" << std::endl;
 
     Scheduler scheduler(1);
@@ -16,7 +20,7 @@ int main() {
 
     ConfigLoader::loadSensors("config/sensors.csv", servers, rooms, scheduler);
 
-    scheduler.simulation(5);
+    scheduler.simulation(steps);
 
     for (auto* room : rooms) delete room;
     for (auto* server : servers) delete server;
